@@ -1,11 +1,12 @@
 import pytest
-import random
-import string
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import AuthLocators, MainPageLocators
+from helpers import generate_email
+
+PASSWORD = "Test123456"
 
 @pytest.fixture
 def driver():
@@ -13,17 +14,10 @@ def driver():
     options = Options()
     options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(options=options)
-    driver.get("https://qa-desk.stand.praktikum-services.ru/")
+    driver.get("https://qa-desk.education-services.ru")
     yield driver
     driver.quit()
 
-@pytest.fixture
-def generate_email():
-    """Генератор уникальных email для регистрации"""
-    def _generate():
-        random_string = ''.join(random.choices(string.ascii_lowercase + string.digits, k=10))
-        return f"{random_string}@test.ru"
-    return _generate
 
 @pytest.fixture
 def created_user(driver):
@@ -36,8 +30,8 @@ def created_user(driver):
         EC.element_to_be_clickable(AuthLocators.NO_ACCOUNT_BTN)
     ).click()
     
-    email = f"test_{random.randint(100000, 999999)}@test.ru"
-    password = "Test123456"
+    email = generate_email()  # ← используем helpers
+    password = PASSWORD
     
     WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located(AuthLocators.EMAIL_INPUT)
@@ -57,10 +51,11 @@ def created_user(driver):
     ).click()
     
     WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located(AuthLocators.LOGIN_REGISTER_BTN)  # ← ИСПРАВЛЕНО!
+        EC.visibility_of_element_located(AuthLocators.LOGIN_REGISTER_BTN)
     )
     
     return {"email": email, "password": password}
+
 
 @pytest.fixture
 def auth_driver(driver):
@@ -73,8 +68,8 @@ def auth_driver(driver):
         EC.element_to_be_clickable(AuthLocators.NO_ACCOUNT_BTN)
     ).click()
     
-    email = f"test_{random.randint(100000, 999999)}@test.ru"
-    password = "Test123456"
+    email = generate_email()  # ← используем helpers
+    password = PASSWORD
     
     WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located(AuthLocators.EMAIL_INPUT)

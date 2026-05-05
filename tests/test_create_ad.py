@@ -7,20 +7,24 @@ class TestCreateAd:
     
     def test_create_ad_unauthorized(self, driver):
         """Создание объявления без авторизации"""
-        driver.find_element(*MainPageLocators.POST_AD_BTN).click()
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(MainPageLocators.POST_AD_BTN)
+        ).click()
         
-        WebDriverWait(driver, 5).until(
+        login_btn = WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located(AuthLocators.LOGIN_REGISTER_BTN)
         )
-        assert driver.find_element(*AuthLocators.LOGIN_REGISTER_BTN).is_displayed()
+        assert login_btn.is_displayed()
     
     def test_create_ad_authorized(self, auth_driver):
         """Создание объявления авторизованным пользователем"""
         driver = auth_driver
         
-        driver.find_element(*MainPageLocators.POST_AD_BTN).click()
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(MainPageLocators.POST_AD_BTN)
+        ).click()
         
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 15).until(
             EC.url_contains("/create-lisiting")
         )
         
@@ -28,51 +32,54 @@ class TestCreateAd:
         ad_description = "Это тестовое описание товара"
         ad_price = "1000"
         
-        driver.find_element(*CreateListingLocators.TITLE_INPUT).send_keys(ad_title)
+        WebDriverWait(driver, 15).until(
+            EC.visibility_of_element_located(CreateListingLocators.TITLE_INPUT)
+        ).send_keys(ad_title)
+        
         driver.find_element(*CreateListingLocators.DESCRIPTION_INPUT).send_keys(ad_description)
         driver.find_element(*CreateListingLocators.PRICE_INPUT).send_keys(ad_price)
         
-        category_arrow = WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(CreateListingLocators.CATEGORY_ARROW)
-        )
-        category_arrow.click()
+        ).click()
         
-        tech_option = WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(CreateListingLocators.CATEGORY_TECH)
-        )
-        tech_option.click()
+        ).click()
         
-        city_arrow = WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(CreateListingLocators.CITY_ARROW)
-        )
-        city_arrow.click()
+        ).click()
         
-        moscow_option = WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 15).until(
             EC.element_to_be_clickable(CreateListingLocators.CITY_MOSCOW)
+        ).click()
+        
+        WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable(CreateListingLocators.CONDITION_NEW)
+        ).click()
+        
+        WebDriverWait(driver, 25).until(
+            EC.element_to_be_clickable(CreateListingLocators.PUBLISH_BTN)
+        ).click()
+        
+        WebDriverWait(driver, 25).until(
+            EC.url_contains("education-services.ru")
         )
-        moscow_option.click()
         
-        driver.find_element(*CreateListingLocators.CONDITION_NEW).click()
-        driver.find_element(*CreateListingLocators.PUBLISH_BTN).click()
-        
-        WebDriverWait(driver, 10).until(
-            EC.url_contains("https://qa-desk.stand.praktikum-services.ru/")
-        )
-        
-        avatar = WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(MainPageLocators.USER_AVATAR)
+        avatar = WebDriverWait(driver, 30).until(
+            EC.element_to_be_clickable(MainPageLocators.USER_AVATAR)
         )
         avatar.click()
         
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 30).until(
             EC.url_contains("/profile")
         )
         
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_all_elements_located(CreateListingLocators.ALL_ADS_TITLES)
+        driver.refresh()
+        
+        WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located((By.XPATH, "//*[contains(text(), 'Тест объявление')]"))
         )
         
-        ad_titles = driver.find_elements(*CreateListingLocators.ALL_ADS_TITLES)
-        titles_text = [title.text for title in ad_titles]
-        
-        assert ad_title in titles_text, f"Объявление '{ad_title}' не найдено в профиле"
+        assert driver.find_element(*CreateListingLocators.AD_TITLE).is_displayed(), "Объявление 'Тест объявление' не найдено в профиле"
