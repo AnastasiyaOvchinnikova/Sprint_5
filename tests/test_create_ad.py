@@ -2,6 +2,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import MainPageLocators, AuthLocators, CreateListingLocators
+from config import CREATE_LISTING_ENDPOINT, BASE_DOMAIN, PROFILE_ENDPOINT
 
 class TestCreateAd:
     
@@ -11,10 +12,9 @@ class TestCreateAd:
             EC.element_to_be_clickable(MainPageLocators.POST_AD_BTN)
         ).click()
         
-        login_btn = WebDriverWait(driver, 15).until(
+        assert WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located(AuthLocators.LOGIN_REGISTER_BTN)
-        )
-        assert login_btn.is_displayed()
+        ).is_displayed()
     
     def test_create_ad_authorized(self, auth_driver):
         """Создание объявления авторизованным пользователем"""
@@ -25,7 +25,7 @@ class TestCreateAd:
         ).click()
         
         WebDriverWait(driver, 15).until(
-            EC.url_contains("/create-lisiting")
+            EC.url_contains(CREATE_LISTING_ENDPOINT)
         )
         
         ad_title = "Тест объявление"
@@ -64,7 +64,7 @@ class TestCreateAd:
         ).click()
         
         WebDriverWait(driver, 25).until(
-            EC.url_contains("education-services.ru")
+            EC.url_contains(BASE_DOMAIN)
         )
         
         avatar = WebDriverWait(driver, 30).until(
@@ -73,13 +73,13 @@ class TestCreateAd:
         avatar.click()
         
         WebDriverWait(driver, 30).until(
-            EC.url_contains("/profile")
+            EC.url_contains(PROFILE_ENDPOINT)
         )
         
         driver.refresh()
         
-        WebDriverWait(driver, 30).until(
-            EC.visibility_of_element_located((By.XPATH, "//*[contains(text(), 'Тест объявление')]"))
-        )
+        ad_element = WebDriverWait(driver, 30).until(
+            EC.visibility_of_element_located(CreateListingLocators.AD_TITLE)
+            )
         
-        assert driver.find_element(*CreateListingLocators.AD_TITLE).is_displayed(), "Объявление 'Тест объявление' не найдено в профиле"
+        assert ad_element.is_displayed(), "Объявление 'Тест объявление' не найдено в профиле"

@@ -3,7 +3,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import AuthLocators, MainPageLocators
 from helpers import generate_email
-from conftest import PASSWORD
+from config import PASSWORD
 
 
 class TestRegistration:
@@ -70,7 +70,7 @@ class TestRegistration:
             EC.visibility_of_all_elements_located(AuthLocators.ERROR_WRAPPERS)
         )
         error_elements = driver.find_elements(*AuthLocators.ERROR_WRAPPERS)
-        assert len(error_elements) >= 3
+        assert len(error_elements) == 3
     
     def test_invalid_email_error_message_displayed(self, driver):
         """Регистрация с некорректным email: под полем Email отображается сообщение «Ошибка»"""

@@ -5,8 +5,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from locators import AuthLocators, MainPageLocators
 from helpers import generate_email
+from config import PASSWORD, BASE_URL
 
-PASSWORD = "Test123456"
 
 @pytest.fixture
 def driver():
@@ -14,7 +14,7 @@ def driver():
     options = Options()
     options.add_argument("--window-size=1920,1080")
     driver = webdriver.Chrome(options=options)
-    driver.get("https://qa-desk.education-services.ru")
+    driver.get(BASE_URL)
     yield driver
     driver.quit()
 

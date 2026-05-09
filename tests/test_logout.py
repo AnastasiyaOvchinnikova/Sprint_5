@@ -13,10 +13,11 @@ class TestLogout:
             EC.element_to_be_clickable(AuthLocators.LOGOUT_BTN)
         ).click()
         
-        WebDriverWait(driver, 15).until(
+        login_btn = WebDriverWait(driver, 15).until(
             EC.visibility_of_element_located(AuthLocators.LOGIN_REGISTER_BTN)
         )
-        assert driver.find_element(*AuthLocators.LOGIN_REGISTER_BTN).is_displayed()
+        
+        assert login_btn.is_displayed()
     
     def test_logout_success_avatar_not_displayed(self, auth_driver):
         """Успешный выход: аватар пользователя не отображается"""
